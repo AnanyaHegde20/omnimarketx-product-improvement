@@ -1,69 +1,158 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+import { useState } from "react";
+import { DollarSign, TrendingUp, Target, Award, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import AppLayout from "@/components/AppLayout";
+import StatCard from "@/components/StatCard";
+import CategoryTabs from "@/components/CategoryTabs";
+import MarketCard from "@/components/MarketCard";
+import TrendingMarkets from "@/components/TrendingMarkets";
+import MarketMovers from "@/components/MarketMovers";
+import SocialPostCard from "@/components/SocialPostCard";
+import TrendingSidebar from "@/components/TrendingSidebar";
+import QuickActions from "@/components/QuickActions";
+import { markets, categories } from "@/data/markets";
+import { socialPosts, trendingTopics } from "@/data/social";
+import { currentUser } from "@/data/users";
+
+export default function HomePage() {
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const filteredMarkets =
+    selectedCategory === "All"
+      ? markets
+      : markets.filter((m) => m.category === selectedCategory);
+
+  const trendingMarkets = markets.filter((m) => m.trending).slice(0, 6);
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+
+  const rightPanel = (
+    <div className="space-y-6">
+      <TrendingSidebar topics={trendingTopics} />
     </div>
+  );
+
+  return (
+    <AppLayout rightPanel={rightPanel}>
+      <div className="space-y-8">
+        {/* Welcome Section */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 lg:p-8 text-white">
+          <h1 className="text-2xl lg:text-3xl font-bold mb-2">
+            {getGreeting()} 👋
+          </h1>
+          <p className="text-blue-100 mb-6 max-w-lg">
+            Discover markets. Make predictions. Follow what matters.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/markets"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors text-sm"
+            >
+              Explore Markets
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/markets"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-500/20 text-white font-medium rounded-lg hover:bg-blue-500/30 transition-colors text-sm"
+            >
+              Create Prediction
+            </Link>
+            <Link
+              href="/portfolio"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-500/20 text-white font-medium rounded-lg hover:bg-blue-500/30 transition-colors text-sm"
+            >
+              View Portfolio
+            </Link>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            label="Portfolio Value"
+            value={`$${currentUser.portfolioValue.toLocaleString()}`}
+            icon={<DollarSign className="w-4 h-4 text-gray-500" />}
+            change="+12.5%"
+            changeType="positive"
+          />
+          <StatCard
+            label="Total Profit/Loss"
+            value={`$${currentUser.totalProfit.toLocaleString()}`}
+            icon={<TrendingUp className="w-4 h-4 text-gray-500" />}
+            change="+8.2%"
+            changeType="positive"
+          />
+          <StatCard
+            label="Active Predictions"
+            value={currentUser.activePredictions.toString()}
+            icon={<Target className="w-4 h-4 text-gray-500" />}
+            change="3 new"
+            changeType="neutral"
+          />
+          <StatCard
+            label="Win Rate"
+            value={`${currentUser.winRate}%`}
+            icon={<Award className="w-4 h-4 text-gray-500" />}
+            change="+2.1%"
+            changeType="positive"
+          />
+        </div>
+
+        {/* Quick Actions */}
+        <QuickActions />
+
+        {/* Category Tabs */}
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Browse Markets
+          </h2>
+          <CategoryTabs
+            categories={categories}
+            selected={selectedCategory}
+            onSelect={setSelectedCategory}
+          />
+        </div>
+
+        {/* Filtered Markets */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          {filteredMarkets.slice(0, 6).map((market) => (
+            <MarketCard key={market.id} market={market} />
+          ))}
+        </div>
+
+        {/* Trending Markets */}
+        <TrendingMarkets markets={trendingMarkets} />
+
+        {/* Market Movers */}
+        <MarketMovers markets={markets} />
+
+        {/* Social Feed */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Social Feed
+            </h2>
+            <Link
+              href="/social"
+              className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              View All
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {socialPosts.slice(0, 4).map((post) => (
+              <SocialPostCard key={post.id} post={post} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </AppLayout>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";import AppLayout from "@/components/AppLayout";
+import { useState, useSyncExternalStore } from "react";
+import AppLayout from "@/components/AppLayout";
 import TrendingSidebar from "@/components/TrendingSidebar";
 import { trendingTopics } from "@/data/social";
 import { Clock, CheckCircle, XCircle, ChevronDown, ChevronUp } from "lucide-react";
